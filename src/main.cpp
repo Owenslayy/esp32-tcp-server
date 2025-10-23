@@ -6,19 +6,33 @@ const char *ssid = WIFI_SSID;
 const char *password = WIFI_PASSWORD;
 
 const int port = 10000;
-WiFiServer server(port);
+WiFiServer server(port);// fonction qui 
+void printClientInfo(WiFiClient& client) {
+  Serial.print("Client IP: ");
+  Serial.println(client.remoteIP());
+  Serial.print("Client Port: ");
+  Serial.println(client.remotePort());
+}
 
 void handleTCPClient() {
   WiFiClient client = server.available();
   uint8_t data[30];
   if (client)
   {
-    Serial.println("New client");
+    Serial.println("New client with IP = " + client.remoteIP().toString() + " and port = " + String(client.remotePort()));
     /* check client is connected */
+    printClientInfo(client);
     while (client.connected())
     {
+      
+      
       if (client.available())
       {
+        bool ledstatus = !ledstatus;
+       pinMode(LED_BUILTIN, OUTPUT);
+        digitalWrite(LED_BUILTIN, ledstatus); // Turn the LED on (Note that LOW is the voltage level
+                                        // but actually the LED is on; this is because
+                                        // it is active low on the ESP-32)
         int len = client.read(data, 30);
         if (len < 30)
         {
